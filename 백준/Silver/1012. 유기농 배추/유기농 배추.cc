@@ -1,77 +1,74 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <string>
-#include <stack>
+#include <queue>
 using namespace std;
 
-stack <pair<int, int>> st;
+int T;
+int board[51][51];
+int visit[51][51];
+int dirX[4] = { 1,0,-1,0 };
+int dirY[4] = { 0,-1,0,1 };
+
+void reset()
+{
+	for (int i = 0; i < 51; ++i)
+	{
+		for (int j = 0; j < 51; ++j)
+		{
+			board[i][j] = 0;
+			visit[i][j] = 0;
+		}
+	}
+}
 
 int main()
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
+	queue<pair<int, int>> qu;
 
-	int T;
 	cin >> T;
-
-	while (T--)
+	
+	for (int p = 0; p < T; ++p)
 	{
-		int M, N, K, ans = 0;
+		int M, N, K, ans=0;
 		cin >> M >> N >> K;
-
-		int map[52][52] = {0,};
-		int visit[52][52] = {0,};
 
 		for (int i = 0; i < K; ++i)
 		{
-			int a, b;
-			cin >> a >> b;
-			map[a][b] = 1;
+			int temp1, temp2;
+			cin >> temp1 >> temp2;
+			board[temp1][temp2] = 1;
 		}
-		
 
-		for (int i = 0; i < M; ++i)
+		for (int i = 0; i < N; ++i)
 		{
-			for (int j = 0; j < N; ++j)
+			for (int j = 0; j < M; ++j)
 			{
-				if (map[i][j] == 0 || visit[i][j] == 1)
-					continue;
-				else
+				if (board[j][i] == 1 && visit[j][i] == 0)
 				{
 					++ans;
-					visit[i][j] = 1;
-					st.push(make_pair(i, j));
+					visit[j][i] = ans;
 
-					while (!st.empty())
+					qu.push(make_pair(j,i));
+					while (!qu.empty())
 					{
-						int x = st.top().first;
-						int y = st.top().second;
-						st.pop();
+						int X = qu.front().first;
+						int Y = qu.front().second;
+						qu.pop();
 						
-						if (map[x+1][y] == 1 && x+1 < M && visit[x + 1][y] != 1)
+						for (int q = 0; q < 4; ++q)
 						{
-							map[x + 1][y] = 1;
-							st.push(make_pair(x+1, y));
-							visit[x + 1][y] = 1;
-						}
-						if (map[x-1][y] == 1 && x - 1 > -1 && visit[x - 1][y] != 1)
-						{
-							map[x - 1][y] = 1;
-							st.push(make_pair(x-1, y));
-							visit[x - 1][y] = 1;
-						}
-						if (map[x][y+1] == 1 && y + 1 < N && visit[x][y+1] != 1)
-						{
-							map[x][y + 1] = 1;
-							st.push(make_pair(x, y+1));
-							visit[x][y + 1] = 1;
-						}
-						if (map[x][y-1] == 1 && y - 1 > -1 && visit[x][y-1] != 1)
-						{
-							map[x][y - 1] = 1;
-							st.push(make_pair(x, y-1));
-							visit[x][y - 1] = 1;
+							int newX = X + dirX[q];
+							int newY = Y + dirY[q];
+							if (newX < 0 || newY < 0 || newX >= M || newY >= N || visit[newX][newY] > 0 || board[newX][newY] ==0)
+							{
+								continue;
+							}
+							
+							qu.push(make_pair(newX, newY));
+							visit[newX][newY] = ans;
 						}
 					}
 				}
@@ -79,7 +76,6 @@ int main()
 		}
 
 		cout << ans << '\n';
+		reset();
 	}
-
-	return 0;
 }
