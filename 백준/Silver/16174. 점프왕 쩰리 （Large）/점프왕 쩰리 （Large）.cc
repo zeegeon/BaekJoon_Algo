@@ -2,13 +2,10 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-#include <stack>
+#include <queue>
 using namespace std;
 
-#define clear cout << "HaruHaru"; return 0;
-#define Noclear cout << "Hing";
-
-stack <pair<int, int>> st;
+queue <pair<int, int>> qu;
 int N;
 int v[65][65];
 int isvisit[65][65];
@@ -17,7 +14,7 @@ int main()
 {
 	ios::sync_with_stdio(0);
 	cin.tie(0);
-	
+
 	cin >> N;
 
 	for (int i = 0; i < N;++i)
@@ -25,38 +22,39 @@ int main()
 			cin >> v[i][j];
 
 	int start = v[0][0];
-	int x=0, y=0;
+	int x = 0, y = 0;
 
 	isvisit[0][0] = 1;
-	st.push(make_pair(x, y));
+	qu.push(make_pair(x, y));
 
-	while (!st.empty())
+	while (!qu.empty())
 	{
-		x = st.top().first;
-		y = st.top().second;
+		x = qu.front().first;
+		y = qu.front().second;
 		start = v[x][y];
-		st.pop();
+		qu.pop();
 
 		if (((x + start == N - 1) && (y == N - 1)) || ((x == N - 1) && (y + start == N - 1)))
 		{
-			clear;
+			cout << "HaruHaru";
+			return 0;
 		}
 		else
 		{
 			if (x + start < N && isvisit[x + start][y] != 1)
 			{
-				st.push(make_pair(x + start, y));
+				qu.push(make_pair(x + start, y));
 				isvisit[x + start][y] = 1;
 			}
 			if (y + start < N && isvisit[x][y + start] != 1)
 			{
-				st.push(make_pair(x, y + start));
+				qu.push(make_pair(x, y + start));
 				isvisit[x][y + start] = 1;
 			}
 		}
 	}
 
-	Noclear;
+	cout << "Hing";
 
 	return 0;
 }
