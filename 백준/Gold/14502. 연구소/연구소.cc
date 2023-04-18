@@ -5,28 +5,36 @@
 using namespace std;
 
 int N, M;
-int map[9][9];
+int board[9][9];
 bool visit[9][9];
-int virus, wall; // 바이러스, 벽
+int virus, wall;
 int ans;
-int dx[4] = { 1,-1,0,0 };
-int dy[4] = { 0,0,1,-1 };
-vector<pair<int, int>> way; // 좌표 저장
-queue<pair<int, int>> q;
+int dx[4] = { 1,0,-1,0 };
+int dy[4] = { 0,-1,0,1 };
+vector<pair<int, int>> way; // 벽 좌표 후보
 
-int BFS()
+
+void reset()
 {
 	// 방문 초기화
 	for (int i = 1; i <= N; i++)
 		for (int j = 1; j <= M; j++)
 			visit[i][j] = false;
+}
+
+int BFS()
+{
+	reset();
 
 	int cnt = virus; // 오염된 영역 크기
+
+	queue<pair<int, int>> q;
 
 	// 바이러스 좌표들 큐에 삽입
 	for (int i = 1; i <= N; i++)
 		for (int j = 1; j <= M; j++)
-			if (map[i][j] == 2) q.push({ i,j });
+			if (board[i][j] == 2) 
+				q.push({ i,j });
 
 	while (!q.empty())
 	{
@@ -44,9 +52,9 @@ int BFS()
 				continue;
 
 			// 방문하지 않은 길이라면
-			if (!visit[next_x][next_y] && map[next_x][next_y] == 0)
+			if (!visit[next_x][next_y] && board[next_x][next_y] == 0)
 			{
-				q.push({ next_x ,next_y });
+				q.push(make_pair(next_x, next_y));
 				visit[next_x][next_y] = true;
 				cnt++;
 			}
@@ -65,36 +73,42 @@ int main()
 	cin >> N >> M;
 
 	for (int i = 1; i <= N; i++)
+	{
 		for (int j = 1; j <= M; j++)
 		{
-			cin >> map[i][j];
-			switch (map[i][j]){
-			case 0: way.push_back({i,j}); break;
-			case 1: wall++; break;
-			case 2: virus++; break;
-			}
+			cin >> board[i][j];
+
+			if (board[i][j] == 0)
+				way.push_back(make_pair(i,j));
+			else if (board[i][j] == 1)
+				wall++;
+			else if (board[i][j] == 2)
+				virus++;
 		}
-			
+	}
+
 	// 벽 3개 세우기 시뮬레이션
 	for (int i = 0; i < way.size(); i++)
+	{
 		for (int j = i + 1; j < way.size(); j++)
+		{
 			for (int k = j + 1; k < way.size(); k++)
 			{
 				// 벽 세우기
-				map[way[i].first][way[i].second] = 1;
-				map[way[j].first][way[j].second] = 1;
-				map[way[k].first][way[k].second] = 1;
-				
+				board[way[i].first][way[i].second] = 1;
+				board[way[j].first][way[j].second] = 1;
+				board[way[k].first][way[k].second] = 1;
+
 				// 안전영역 최대크기 저장
-				ans = max(ans, BFS()); 
-				
+				ans = max(ans, BFS());
+
 				// 되돌려 놓기
-				map[way[i].first][way[i].second] = 0;
-				map[way[j].first][way[j].second] = 0;
-				map[way[k].first][way[k].second] = 0;
+				board[way[i].first][way[i].second] = 0;
+				board[way[j].first][way[j].second] = 0;
+				board[way[k].first][way[k].second] = 0;
 			}
+		}
+	}
 
 	cout << ans;
-    
-    return 0;
 }
